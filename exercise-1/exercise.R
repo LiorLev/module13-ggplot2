@@ -25,11 +25,13 @@ ggplot(data = diamonds.sample)
 # Draw a scatter plot (with point geometry) with for the `diamonds.sample` set,
 # with the `carat` mapped to the x-position and `price` mapped to the y-position.
 
-ggplot(data = diamonds.sample) + geom_point(mapping = aes(x = carat, y = price))
+ggplot(data = diamonds.sample, mapping = aes(x = carat, y = price)) + 
+  geom_point()
 
 # Draw the same plot as above, but color each of the points based on their clarity.
 
-ggplot(data = diamonds.sample) + geom_point(mapping = aes(x = carat, y = price, color = clarity))
+ggplot(data = diamonds.sample, mapping = aes(x = carat, y = price, color = clarity)) + 
+  geom_point()
 
 
 # Draw the same plot as above, but for the entire `diamonds` data set. Note this may take
@@ -47,8 +49,8 @@ ggplot(data = diamonds.sample) + geom_point(mapping = aes(x = carat, y = price),
 # Draw a scatter plot for `diamonds.sample` of `price` by `carat`, where each
 # point has an aesthetic _shape_ based on the diamond's `cut`.
 
-ggplot(data = diamonds.sample) + geom_point(mapping = aes(x = carat, y = price, 
-                                                          color = clarity,shape = cut))
+ggplot(data = diamonds.sample, mapping = aes(x = carat, y = price)) +
+  geom_point(color = clarity,shape = cut)
 
 
 # Draw a scatter plot for `diamonds.sample` of *`cut`* by `carat`, where each
@@ -93,8 +95,9 @@ ggplot(data = diamonds.sample) + geom_histogram(aes(x=depth, fill = clarity))
 # Making the points have some `alpha` transparency will make the plot look nicer
 # multiple geoms (point & smooth)
 
-ggplot(data = diamonds.sample) + geom_point(mapping = aes(x = carat, y = price, color = cut), alpha = 0.1) +
-                                 geom_smooth(mapping = aes(x = carat, y = price, color=cut), se = FALSE)
+ggplot(data = diamonds.sample, mapping = aes(x = carat, y = price, color = cut)) + 
+  geom_point(alpha = 0.1) +
+  geom_smooth(se = FALSE)
 
 ## Bonus
 # Draw a bar chart of average diamond prices by clarity, and include "error bars" marking
@@ -107,5 +110,8 @@ ggplot(data = diamonds.sample) + geom_point(mapping = aes(x = carat, y = price, 
 # Start by creating a data frame `diamond.summary` that includes summarized data for each clarity group.
 # Your summary data shuld include the mean price and the standard error of the price.
 
-diamonds.summary <- diamonds %>% group_by(clarity) %>% summarize(mean = mean(price), std_err = )
+diamond.summary <- diamonds %>% group_by(clarity) %>% summarize(mean = mean(price), sd = sd(price), se = sd/sqrt(length(price)))
 # Then draw the plot. The error bars should stretch from the mean-error to the mean+error.
+ggplot(data = diamond.summary, mapping = aes(x=clarity, y=mean)) +
+  geom_bar(aes(fill=clarity), stat="identity") +
+  geom_errorbar(data = diamond.summary, aes(ymin=(mean-se), ymax=(mean+se)))
